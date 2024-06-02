@@ -36,7 +36,7 @@ import rospy
 
 from sensor_msgs.msg import NavSatFix, NavSatStatus, TimeReference
 from gps_common.msg import GPSFix, GPSStatus
-from geometry_msgs.msg import TwistStamped, QuaternionStamped
+from geometry_msgs.msg import TwistStamped, Pose2D
 from tf.transformations import quaternion_from_euler
 
 from libnmea_navsat_driver.checksum_utils import check_nmea_checksum
@@ -308,14 +308,8 @@ class RosNMEADriver(object):
         elif 'HDT' in parsed_sentence:
             data = parsed_sentence['HDT']
             if data['heading']:
-                current_heading = QuaternionStamped()
-                current_heading.header.stamp = current_time
-                current_heading.header.frame_id = frame_id
-                q = quaternion_from_euler(0, 0, math.radians(data['heading']))
-                current_heading.quaternion.x = q[0]
-                current_heading.quaternion.y = q[1]
-                current_heading.quaternion.z = q[2]
-                current_heading.quaternion.w = q[3]
+                current_heading = Pose2D()
+                current_heading.theta=data['heading']
                 self.heading_pub.publish(current_heading)
         elif 'GSA' in parsed_sentence:
             data = parsed_sentence['GSA']
